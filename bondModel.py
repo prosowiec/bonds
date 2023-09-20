@@ -251,22 +251,19 @@ def get_bond_df(bond, period, predicted_intrest, cost, tax = 0.19):
     return df
 
 
-def get_inflation_models( inflationList : list, period = 144, cost = 50000):
+def get_inflation_models( inflationList, period = 144, cost = 50000):
     
     bonds = pd.read_csv("economic_data/bonds.csv", delimiter=";")
 
-    inflation_list = []
-    res = {}   
+    res = {} 
     for index, row in bonds[bonds["index_pointer"] == "inflation"].iterrows():
+        inflation_list = inflationList.copy()
+        
         temp = row.to_dict()
         bond = pd.DataFrame([temp]) 
         
-        inflationList = [bond["procent_first_year"].values.astype(float)[0]] + [round(x / 100, 4) for x in inflationList]
-        
-        for i in range(0, len(inflationList)):
-            if i % 12 == 0:
-                inflation_list.append(inflationList[i])
-        
+        inflation_list = [bond["procent_first_year"].values.astype(float)[0]] + [round(x / 100, 4) for x in inflation_list]
+
         bond_df = get_bond_df(bond, period, inflation_list, cost, 0.19)
         res[bond["bond_type"].values.astype(str)[0]] = bond_df
     
