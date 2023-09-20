@@ -150,7 +150,10 @@ def get_yearHeatDic(probDic):
 def make_heatmap(data):
     row = 3 + 1
     col = 2 + 1
-    fig, ax = plt.subplots(row, col, figsize = (25, 25), dpi = 50)
+
+    fig, ax = plt.subplots(row, col, sharex="col", figsize = (16, 20), dpi = 90)
+    fig.tight_layout(rect=[0.05, 0.03, 1, 0.97])
+    fig.subplots_adjust(hspace=0.2, wspace=0.35)
     year = 1
     for r in range(0, row):
         for c in range(0, col):
@@ -159,7 +162,6 @@ def make_heatmap(data):
             ax[r][c].set_ylabel('')    
             ax[r][c].set_xlabel('')
             year += 1
-    
     plt.show()
         
     return fig
@@ -177,7 +179,7 @@ def get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 1000):
 
 
 def main():
-    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 10)
+    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 5000)
     make_heatmap(yearHeat)
 
 
