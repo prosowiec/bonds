@@ -205,6 +205,7 @@ def make_singleReturnPlot():
     fig, ax = plt.subplots(1, 1, figsize = (10, 10), dpi = 100)
     tab_n = modelsReturns.div(modelsReturns.max(axis=1), axis=0) / 999999999999999
     sns.heatmap(tab_n, annot=modelsReturns, linewidths=.5, cmap="Greens", cbar=False, fmt='g')
+    plt.title("Heatmap of annual returns")
     plt.show()
 
 
@@ -220,7 +221,7 @@ def get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 1000, tax = 0
 
 
 def main():
-    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 5000, tax = 0.19)
+    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 5, tax = 0.19)
     make_heatmap(yearHeat)
     make_singleReturnPlot()
 
