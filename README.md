@@ -1,5 +1,5 @@
 ﻿# Bonds
-Estimates return of bonds investments over time using ARIMA and Monte Carlo simulation, project still in development. In this repo I tried to quantify uncertainty in economic data, knowing that it is almost impossible to always be right in predicting the future, as it is hard to predict an indicator that is not solely based on hard data, but can be influenced by politicians.
+Estimates return of bonds investments over time using ARIMA and Monte Carlo simulation, project still in development. In this repo I tried to quantify uncertainty in economic data, knowing that it is almost impossible to always be right in predicting the future, as it is hard to predict an indicator that is not solely based on hard data, but for example can be influenced by politicians.
 
 <a href="https://drive.google.com/uc?export=view&id=1u-9RW3p9vL15QmSJa6RJoOdAuJZsqFMK"><img src="https://drive.google.com/uc?export=view&id=1u-9RW3p9vL15QmSJa6RJoOdAuJZsqFMK" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
 
