@@ -35,11 +35,11 @@ def get_intrestDic(initial, upper, lower, k = 1000):
     
     return intrestDic
 
-def get_modelDic(intrestDic, peroid , cost):
+def get_InflationmodelDic(intrestDic, peroid , cost, tax = 0.19):
     modelDic = {}
     #get models and save total to modelDic where len(modelDic["COI"][0]) = peroid
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        future_to_model = {executor.submit(bondModel.get_inflation_models, intrestDic[key], peroid , cost): key for key in intrestDic.keys()}
+        future_to_model = {executor.submit(bondModel.get_inflation_models, intrestDic[key], peroid , cost, tax): key for key in intrestDic.keys()}
         for future in concurrent.futures.as_completed(future_to_model):
             data = future.result()
             for key in data.keys():
@@ -50,7 +50,11 @@ def get_modelDic(intrestDic, peroid , cost):
     
     return modelDic
                 
-                
+def get_singleModel(interest, peroid , cost, tax = 0.19):
+    models = bondModel.get_inflation_models(interest, peroid , cost, tax)
+    
+    return models
+
 def get_annualBondReturn(modelDic, peroid):
     annualBondReturn = {}
 
@@ -147,6 +151,20 @@ def get_yearHeatDic(probDic):
         
     return yearHeat
 
+def get_yearReturn(res):
+    yearReturn = {}
+    for key in res.keys():
+        for index, row in res[key].iterrows():
+            temp = row.to_dict()
+            bond = pd.DataFrame([temp]) 
+            
+            if (index + 1) % 12 == 0 and index > 0:
+                if key not in yearReturn.keys():
+                    yearReturn[key] = [bond["total"].values.astype(float)[0]]
+                else:
+                    yearReturn[key].append(bond["total"].values.astype(float)[0])
+    return yearReturn
+
 def make_heatmap(data):
     row = 3 + 1
     col = 2 + 1
@@ -166,12 +184,35 @@ def make_heatmap(data):
         
     return fig
 
+def make_singleReturnPlot():
+    initial, upper, lower = get_pred_inflation()
+    models = get_singleModel(initial, peroid = 144 , cost = 50000, tax = 0.19)
+    yearReturn = get_yearReturn(models)
+    
+    cols = ["bond", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    matix = [cols]
+    for key in yearReturn.keys():
+        matix.append([key] + yearReturn[key])
 
-def get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 1000):
+    modelsReturns = pd.DataFrame(matix)
+    modelsReturns.columns = modelsReturns.iloc[0]
+    modelsReturns.set_index("bond", inplace=True)
+    modelsReturns = round(modelsReturns[1:].astype(float), -1)
+    modelsReturns.columns = modelsReturns.columns.rename("year")
+
+    modelsReturns = modelsReturns.transpose()
+    
+    fig, ax = plt.subplots(1, 1, figsize = (10, 10), dpi = 100)
+    tab_n = modelsReturns.div(modelsReturns.max(axis=1), axis=0) / 999999999999999
+    sns.heatmap(tab_n, annot=modelsReturns, linewidths=.5, cmap="Greens", cbar=False, fmt='g')
+    plt.show()
+
+
+def get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 1000, tax = 0.19):
     initial, upper, lower = get_pred_inflation()
     
     intrestDic = get_intrestDic(initial, upper, lower, k)
-    modelDic = get_modelDic(intrestDic, peroid, cost)
+    modelDic = get_InflationmodelDic(intrestDic, peroid, cost, tax)
     annualBondReturn = get_annualBondReturn(modelDic, peroid)
     probDic = get_probDic(annualBondReturn)
     yearHeat = get_yearHeatDic(probDic)
@@ -179,9 +220,10 @@ def get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 1000):
 
 
 def main():
-    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 5000)
+    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 5000, tax = 0.19)
     make_heatmap(yearHeat)
+    make_singleReturnPlot()
 
-
+    
 if __name__ == "__main__":
     main()
