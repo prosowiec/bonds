@@ -170,7 +170,7 @@ def make_heatmap(data):
     col = 2 + 1
 
     fig, ax = plt.subplots(row, col, sharex="col", figsize = (16, 20), dpi = 90)
-    fig.tight_layout(rect=[0.05, 0.03, 1, 0.97])
+    fig.tight_layout(rect=[0.05, 0.03, 1, 0.94])
     fig.subplots_adjust(hspace=0.2, wspace=0.35)
     year = 1
     for r in range(0, row):
@@ -180,11 +180,12 @@ def make_heatmap(data):
             ax[r][c].set_ylabel('')    
             ax[r][c].set_xlabel('')
             year += 1
+    fig.suptitle(' Heatmaps of probabilities of returns ranges for given year ', fontsize=22)
     plt.show()
         
     return fig
 
-def make_singleReturnPlot():
+def make_singleReturnPlot(peroid = 144 , cost = 50000, tax = 0.19):
     initial, upper, lower = get_pred_inflation()
     models = get_singleModel(initial, peroid = 144 , cost = 50000, tax = 0.19)
     yearReturn = get_yearReturn(models)
@@ -203,9 +204,10 @@ def make_singleReturnPlot():
     modelsReturns = modelsReturns.transpose()
     
     fig, ax = plt.subplots(1, 1, figsize = (10, 10), dpi = 100)
+    fig.tight_layout(rect=[0.02, 0.03, 1, 0.94])
     tab_n = modelsReturns.div(modelsReturns.max(axis=1), axis=0) / 999999999999999
     sns.heatmap(tab_n, annot=modelsReturns, linewidths=.5, cmap="Greens", cbar=False, fmt='g')
-    plt.title("Heatmap of annual returns")
+    plt.title("Heatmap of annual returns", fontsize = 20)
     plt.show()
 
 
@@ -221,9 +223,9 @@ def get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 1000, tax = 0
 
 
 def main():
-    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 5, tax = 0.19)
+    yearHeat = get_inflation_monteCarloOutput(cost = 50000, peroid = 144, k = 5000, tax = 0.19)
     make_heatmap(yearHeat)
-    make_singleReturnPlot()
+    make_singleReturnPlot(peroid = 144 , cost = 50000, tax = 0.19)
 
     
 if __name__ == "__main__":
